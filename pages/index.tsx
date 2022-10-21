@@ -2,8 +2,65 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import { Button } from "../components/button";
 import Select from "~/components/select";
+import { trpc } from "../utils/trpc";
+
+const Users = () => {
+  const users = trpc.users.list.useQuery();
+  if (!users.data) {
+    return <div>Loading...</div>;
+  }
+
+  return (
+    <table className="table-auto border border-slate-500 w-full">
+      <thead>
+        <tr>
+          <th className="border border-slate-600">id</th>
+          <th className="border border-slate-600">name</th>
+          <th className="border border-slate-600">actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {users.data.map((user) => (
+          <tr key={user.id}>
+            <td className="border border-slate-700">{user.id}</td>
+            <td className="border border-slate-700">{user.name}</td>
+            <td className="border border-slate-700">
+              <Select />
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+};
+
+const Admin = () => {
+  const admin = trpc.admin.useQuery(undefined, { retry: 0 });
+
+  console.log(admin);
+
+  if (admin.isError) {
+    console.log("qui", admin.error, "la", admin.errorUpdatedAt);
+    return <div>error {admin.error.message}</div>;
+  }
+
+  if (!admin.data) {
+    return <div>Loading...</div>;
+  }
+
+  return <div>Admin</div>;
+};
 
 const Home: NextPage = () => {
+  const hello = trpc.greeting.useQuery(
+    { name: "world" },
+    { trpc: { ssr: false } }
+  );
+
+  if (!hello.data) {
+    return <div>Loading {hello.isFetching}...</div>;
+  }
+
   return (
     <div className="">
       <Head>
@@ -12,27 +69,43 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
+      <header>
+        <div>
+          <p>{hello.data.text}</p>
+        </div>
+      </header>
+
       <main className="container mx-auto">
         <h1 className="text-5xl font-semibold pb-10">Mockup of Radix UI</h1>
 
         <div className="flex flex-col space-y-4">-</div>
 
-        <table className="table-fixed border border-slate-500 w-full">
-          <thead>
-            <tr>
-              <th className="border border-slate-600">Field 1</th>
-              <th className="border border-slate-600">Field 2</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td className="border border-slate-700">Value 1</td>
-              <td className="border border-slate-700">
-                <Select />
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div className="py-8">
+          <table className="table-fixed border border-slate-500 w-full">
+            <thead>
+              <tr>
+                <th className="border border-slate-600">Field 1</th>
+                <th className="border border-slate-600">Field 2</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="border border-slate-700">Value 1</td>
+                <td className="border border-slate-700">
+                  <Select />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div className="py-8">
+          <Users />
+        </div>
+
+        <div className="py-8">
+          <Admin />
+        </div>
       </main>
 
       <footer className="">
