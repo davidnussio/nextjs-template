@@ -4,7 +4,7 @@ import {
   HiChevronUp as ChevronUpIcon,
 } from "react-icons/hi";
 import * as SelectPrimitive from "@radix-ui/react-select";
-import cx from "classnames";
+import cx from "clsx";
 import React from "react";
 import { Button } from "./button";
 
