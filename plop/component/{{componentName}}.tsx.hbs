@@ -1,0 +1,15 @@
+import * as React from "react";
+
+export type {{capitalize componentName}}Props = React.ComponentProps<"div"> & {};
+
+{{#if forwardedRef}}
+export const {{capitalize componentName}} = React.forwardRef<HTMLDivElement, {{capitalize componentName}}Props>(
+  ({ children, ...props }, ref) => <div ref={ref} {...props} />
+);
+
+{{capitalize componentName}}.displayName = "{{capitalize componentName}}";
+{{else}}
+export const {{capitalize componentName}} = (props: {{capitalize componentName}}Props) => {
+  return <div />;
+}
+{{/if}}
